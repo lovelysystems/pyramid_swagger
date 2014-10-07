@@ -221,7 +221,7 @@ def validate_incoming_request(route_mapper, request, schema_map, resolver):
         matchdict = dict(
             (k, cast_request_param(schema_map.request_path_schema, k, v))
             for k, v
-            in info.get('match', {}).items()
+            in info.get('match', {}).items() if k != 'traverse'
         )
         Draft3Validator(
             schema_map.request_path_schema,
