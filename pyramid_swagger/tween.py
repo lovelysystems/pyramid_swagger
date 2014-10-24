@@ -258,7 +258,10 @@ def validate_outgoing_response(response, schema_map, resolver):
     """
     body = prepare_body(response)
     # Short circuit if we are supposed to not validate anything.
-    if schema_map.response_body_schema.get('type') == 'void' and body is None:
+    if (schema_map.response_body_schema.get('type') == 'html'
+        or (schema_map.response_body_schema.get('type') == 'void'
+            and body is None)
+       ):
         return
     Draft4Validator(
         schema_map.response_body_schema,
