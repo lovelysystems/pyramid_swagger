@@ -8,6 +8,7 @@ import jsonschema.exceptions
 import simplejson
 from jsonschema.validators import Draft3Validator, Draft4Validator
 from pyramid.httpexceptions import HTTPClientError, HTTPInternalServerError
+from pyramid.settings import asbool
 from .ingest import compile_swagger_schema
 from .model import PathNotMatchedError
 
@@ -72,14 +73,18 @@ def load_settings(registry):
         'api_docs/'
     )
 
-    enable_swagger_spec_validation = registry.settings.get(
-        'pyramid_swagger.enable_swagger_spec_validation',
-        True
+    enable_swagger_spec_validation = asbool(
+        registry.settings.get(
+            'pyramid_swagger.enable_swagger_spec_validation',
+            'True'
+        )
     )
 
-    enable_response_validation = registry.settings.get(
-        'pyramid_swagger.enable_response_validation',
-        True
+    enable_response_validation = asbool(
+        registry.settings.get(
+            'pyramid_swagger.enable_response_validation',
+            'True'
+        )
     )
     # Static URLs and /api-docs skip validation by default
     skip_validation = registry.settings.get(
