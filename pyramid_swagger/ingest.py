@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 import glob
 import os.path
 
+from pyramid.settings import asbool
+
 import simplejson
 from bravado_core.spec import Spec, build_http_handlers
 from six.moves.urllib import parse as urlparse
@@ -195,23 +197,47 @@ def create_bravado_core_config(settings):
     :rtype: dict
     """
     # Map pyramid_swagger config key -> bravado_core config key
-    config_keys = {
-        'pyramid_swagger.enable_request_validation': 'validate_requests',
-        'pyramid_swagger.enable_response_validation': 'validate_responses',
-        'pyramid_swagger.enable_swagger_spec_validation':
-            'validate_swagger_spec',
-        'pyramid_swagger.use_models': 'use_models',
-        'pyramid_swagger.user_formats': 'formats',
-    }
+    config_transformation = [
+        ('pyramid_swagger.enable_request_validation',
+         'validate_requests',
+         asbool),
+        ('pyramid_swagger.enable_response_validation',
+         'validate_responses',
+         asbool),
+        ('pyramid_swagger.enable_swagger_spec_validation',
+         'validate_swagger_spec',
+         asbool),
+        ('pyramid_swagger.use_models',
+         'use_models',
+         asbool),
+        ('pyramid_swagger.user_formats',
+         'formats',
+         lambda x: x),
+        ('pyramid_swagger.include_read_only_properties',
+         'include_read_only_properties',
+         asbool),
+        ('pyramid_swagger.pass_property_on_missing_spec',
+         'pass_property_on_missing_spec',
+         asbool),
+        ('pyramid_swagger.expand_missing_properties',
+         'expand_missing_properties',
+         asbool),
+    ]
 
     bravado_core_config_defaults = {
         'use_models': False
     }
 
-    return dict(bravado_core_config_defaults, **dict(
-        (bravado_core_key, settings[pyramid_swagger_key])
-        for pyramid_swagger_key, bravado_core_key in config_keys.items()
-        if pyramid_swagger_key in settings))
+    return dict(
+        bravado_core_config_defaults,
+        **dict(
+            (bravado_core_key, transform(settings[pyramid_swagger_key]))
+            for (pyramid_swagger_key,
+                 bravado_core_key,
+                 transform) in config_transformation
+            if pyramid_swagger_key in settings
+        )
+    )
 
 
 def ingest_resources(mapping, schema_dir):

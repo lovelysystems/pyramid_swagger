@@ -48,6 +48,19 @@ A few relevant settings for your `Pyramid .ini file <http://docs.pylonsproject.o
         # Default: False
         pyramid_swagger.use_models = False
 
+        # Include readOnly properties in the request data.
+        # Default: True
+        pyramid_swagger.include_read_only_properties = True
+
+        # Request properties which are not defined in the spec are forwarded
+        # as is.
+        # Default: True
+        pyramid_swagger.pass_property_on_missing_spec = True
+
+        # Properties not provided in the input are added with value None.
+        # Default: True
+        pyramid_swagger.expand_missing_properties = True
+
         # Exclude certain endpoints from validation. Takes a list of regular
         # expressions.
         # Default: [r'^/static/?', r'^/api-docs/?, r'^/swagger.json']
